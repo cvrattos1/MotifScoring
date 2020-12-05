@@ -22,7 +22,9 @@ def scoreMotif(template, result):
 		score = scoreAlignment(string1, string2)
 		score[0:i] = abs(larger[0:i] - 0.25)
 		score[shortLen + i:] = abs(larger[shortLen + i:] - 0.25)
-		print(np.sum(score.to_numpy()))
+		currentScore = np.sum(score.to_numpy())
+		if(currentScore < bestScore):
+			bestScore = currentScore
 
 	# Loop through all short rightshift alignments
 	for i in range(difference, longLen):
@@ -32,7 +34,9 @@ def scoreMotif(template, result):
 		score = scoreAlignment(string1, string2)
 		score[0:i] = abs(larger[0:i] - 0.25)
 		score[longLen:longLen+i] = abs(smaller[longLen-i:] - 0.25)
-		print(np.sum(score.to_numpy()))
+		currentScore = np.sum(score.to_numpy())
+		if(currentScore < bestScore):
+			bestScore = currentScore
 
 	# Loop through all long rightshift alignments (aka short leftshift alignments)
 	smaller.index = range(0,shortLen)
@@ -43,22 +47,21 @@ def scoreMotif(template, result):
 		score = scoreAlignment(string1, string2)
 		score[0:i] = abs(smaller[0:i] - 0.25)
 		score[shortLen:shortLen+i+difference] = abs(larger[shortLen-i:] - 0.25)
-		print(np.sum(score.to_numpy()))
+		currentScore = np.sum(score.to_numpy())
+		if(currentScore < bestScore):
+			bestScore = currentScore
 
 	return bestScore
 
 def scoreAlignment(template, result):
 	difference = abs(template - result)
-	# result = np.sum(difference)
 	return difference
 
 def main():
 	with open('long_motif/motif.json') as f:
 		template = pd.read_json(f)
-	with open('long_motif/memeBad.json') as f:
+	with open('long_motif/meme.json') as f:
 		meme = pd.read_json(f)
-	# print(template)
-	# print(meme)
 	score = scoreMotif(template, meme)
 	print(score)
 
