@@ -14,6 +14,16 @@ def scoreMotif(template, result):
 	shortLen = smaller.shape[0]
 	difference = longLen - shortLen
 
+	# Loop through all fully overlapping alignments
+	for i in range(difference + 1):
+		string1 = larger
+		smaller.index = range(i,(i+shortLen))
+		string2 = smaller
+		score = scoreAlignment(string1, string2)
+		score[0:i] = abs(larger[0:i] - 0.25)
+		score[shortLen + i:] = abs(larger[shortLen + i:] - 0.25)
+		print(np.sum(score.to_numpy()))
+
 	# Loop through all short rightshift alignments
 	for i in range(difference, longLen):
 		string1 = larger
@@ -29,6 +39,14 @@ def scoreMotif(template, result):
 		# print(score)
 		# print(np.sum(score))
 		print(np.sum(score.to_numpy()))
+
+	# Loop through all long rightshift alignments (aka short leftshift alignments)
+	smaller.index = range(0,shortLen)
+	for i in range(1, shortLen):
+		string1 = shorter
+		larger.index = range(i,(i+longLen))
+		string2 = larger
+
 	return bestScore
 
 def scoreAlignment(template, result):
