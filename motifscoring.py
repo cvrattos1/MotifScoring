@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-def scoreMotif(template, result):
+def scoreMotif(template, result, weightA, weightC, weightG, weightT):
 	bestScore = float('inf')
 
 	if(template.shape[0] > result.shape[0]):
@@ -20,8 +20,14 @@ def scoreMotif(template, result):
 		smaller.index = range(i,(i+shortLen))
 		string2 = smaller
 		score = scoreAlignment(string1, string2)
-		score[0:i] = abs(larger[0:i] - 0.25)
-		score[shortLen + i:] = abs(larger[shortLen + i:] - 0.25)
+		score.loc[0:i - 1, 'A'] = abs(larger[0:i]['A'] - weightA)
+		score.loc[0:i - 1, 'C'] = abs(larger[0:i]['C'] - weightC)
+		score.loc[0:i - 1, 'G'] = abs(larger[0:i]['G'] - weightG)
+		score.loc[0:i - 1, 'T'] = abs(larger[0:i]['T'] - weightT)
+		score.loc[shortLen + i:, 'A'] = abs(larger[shortLen + i:]['A'] - weightA)
+		score.loc[shortLen + i:, 'C'] = abs(larger[shortLen + i:]['C'] - weightC)
+		score.loc[shortLen + i:, 'G'] = abs(larger[shortLen + i:]['G'] - weightG)
+		score.loc[shortLen + i:, 'T'] = abs(larger[shortLen + i:]['T'] - weightT)
 		currentScore = np.sum(score.to_numpy())
 		if(currentScore < bestScore):
 			bestScore = currentScore
@@ -32,8 +38,14 @@ def scoreMotif(template, result):
 		smaller.index = range(i,(i+shortLen))
 		string2 = smaller
 		score = scoreAlignment(string1, string2)
-		score[0:i] = abs(larger[0:i] - 0.25)
-		score[longLen:longLen+i] = abs(smaller[longLen-i:] - 0.25)
+		score.loc[0:i - 1, 'A'] = abs(larger[0:i]['A'] - weightA)
+		score.loc[0:i - 1, 'C'] = abs(larger[0:i]['C'] - weightC)
+		score.loc[0:i - 1, 'G'] = abs(larger[0:i]['G'] - weightG)
+		score.loc[0:i - 1, 'T'] = abs(larger[0:i]['T'] - weightT)
+		score.loc[longLen:longLen+i, 'A'] = abs(smaller[longLen-i:]['A'] - weightA)
+		score.loc[longLen:longLen+i, 'C'] = abs(smaller[longLen-i:]['C'] - weightC)
+		score.loc[longLen:longLen+i, 'G'] = abs(smaller[longLen-i:]['G'] - weightG)
+		score.loc[longLen:longLen+i, 'T'] = abs(smaller[longLen-i:]['T'] - weightT)
 		currentScore = np.sum(score.to_numpy())
 		if(currentScore < bestScore):
 			bestScore = currentScore
@@ -45,8 +57,14 @@ def scoreMotif(template, result):
 		larger.index = range(i,(i+longLen))
 		string2 = larger
 		score = scoreAlignment(string1, string2)
-		score[0:i] = abs(smaller[0:i] - 0.25)
-		score[shortLen:shortLen+i+difference] = abs(larger[shortLen-i:] - 0.25)
+		score.loc[0:i - 1, 'A'] = abs(smaller[0:i]['A'] - weightA)
+		score.loc[0:i - 1, 'C'] = abs(smaller[0:i]['C'] - weightC)
+		score.loc[0:i - 1, 'G'] = abs(smaller[0:i]['G'] - weightG)
+		score.loc[0:i - 1, 'T'] = abs(smaller[0:i]['T'] - weightT)
+		score.loc[shortLen:shortLen+i+difference, 'A'] = abs(larger[shortLen-i:]['A'] - weightA)
+		score.loc[shortLen:shortLen+i+difference, 'C'] = abs(larger[shortLen-i:]['C'] - weightC)
+		score.loc[shortLen:shortLen+i+difference, 'G'] = abs(larger[shortLen-i:]['G'] - weightG)
+		score.loc[shortLen:shortLen+i+difference, 'T'] = abs(larger[shortLen-i:]['T'] - weightT)
 		currentScore = np.sum(score.to_numpy())
 		if(currentScore < bestScore):
 			bestScore = currentScore
@@ -62,7 +80,7 @@ def main():
 		template = pd.read_json(f)
 	with open('long_motif/meme.json') as f:
 		meme = pd.read_json(f)
-	score = scoreMotif(template, meme)
+	score = scoreMotif(template, meme, 0.25, 0.25, 0.25, 0.25)
 	print(score)
 
 if __name__ == "__main__":
