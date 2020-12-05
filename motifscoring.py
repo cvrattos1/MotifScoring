@@ -29,23 +29,21 @@ def scoreMotif(template, result):
 		string1 = larger
 		smaller.index = range(i,(i+shortLen))
 		string2 = smaller
-		# print(i)
-		# print(string1)
-		# print(string2)
 		score = scoreAlignment(string1, string2)
 		score[0:i] = abs(larger[0:i] - 0.25)
 		score[longLen:longLen+i] = abs(smaller[longLen-i:] - 0.25)
-		# print("SCORE")
-		# print(score)
-		# print(np.sum(score))
 		print(np.sum(score.to_numpy()))
 
 	# Loop through all long rightshift alignments (aka short leftshift alignments)
 	smaller.index = range(0,shortLen)
 	for i in range(1, shortLen):
-		string1 = shorter
+		string1 = smaller
 		larger.index = range(i,(i+longLen))
 		string2 = larger
+		score = scoreAlignment(string1, string2)
+		score[0:i] = abs(smaller[0:i] - 0.25)
+		score[shortLen:shortLen+i+difference] = abs(larger[shortLen-i:] - 0.25)
+		print(np.sum(score.to_numpy()))
 
 	return bestScore
 
